@@ -1,13 +1,36 @@
 import { MapPinArea } from '@phosphor-icons/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useToast from '../hook/useToast';
+import { useForm } from 'react-hook-form';
+import { login } from '../utils/axiosInstance';
+import Cookies from 'js-cookie';
+
+interface UserData {
+  email: string;
+  password: string;
+}
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const { showSuccessToast, showErrorToast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserData>();
 
-  const fetchData = async () => {
+  const onSubmit = async (dataCreds: UserData) => {
     try {
+      const res = await login(dataCreds.email, dataCreds.password);
       showSuccessToast('Data fetched successfully!');
+
+      Cookies.set('token', res.token, {
+        secure: false, // In production, set to true (for HTTPS)
+        sameSite: 'Strict', // Prevents CSRF attacks
+        expires: 1, // Token expiration in days (or use maxAge in seconds)
+      });
+
+      navigate('/geo-app');
     } catch (error) {
       showErrorToast(`Error fetching data ${error}`);
     }
@@ -26,7 +49,12 @@ const LoginPage = () => {
             <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
               Sign in to your account
             </h1>
-            <form className='space-y-4 md:space-y-6' action='#'>
+
+            <form
+              className='space-y-4 md:space-y-6'
+              action='#'
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div>
                 <label
                   htmlFor='email'
@@ -36,12 +64,14 @@ const LoginPage = () => {
                 </label>
                 <input
                   type='email'
-                  name='email'
                   id='email'
                   className='bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  placeholder='name@company.com'
+                  placeholder='Email'
+                  {...register('email', { required: 'Email is required' })}
                   required
                 />
+                {errors.email && <p>{errors.email.message}</p>}
+                
               </div>
               <div>
                 <label
@@ -52,10 +82,12 @@ const LoginPage = () => {
                 </label>
                 <input
                   type='password'
-                  name='password'
                   id='password'
                   placeholder='••••••••'
                   className='bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  {...register('password', {
+                    required: 'Password is required',
+                  })} // Correctly register password
                   required
                 />
               </div>
@@ -87,7 +119,6 @@ const LoginPage = () => {
                 </a>
               </div>
               <button
-                onClick={fetchData}
                 type='submit'
                 className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >

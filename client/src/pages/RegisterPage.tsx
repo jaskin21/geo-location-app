@@ -1,7 +1,41 @@
 import { MapPinArea } from '@phosphor-icons/react';
-import { Link } from 'react-router-dom';
+import useToast from '../hook/useToast';
+import { useForm } from 'react-hook-form';
+import { registerUser } from '../utils/axiosInstance';
+import { Link, useNavigate } from 'react-router-dom';
+
+interface UserData {
+  username: string;
+  email: string;
+  password: string;
+}
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const { showSuccessToast, showErrorToast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserData>();
+
+  const onSubmit = async (dataCreds: UserData) => {
+    try {
+      console.log(dataCreds);
+      await registerUser(
+        dataCreds.username,
+        dataCreds.email,
+        dataCreds.password
+      );
+      showSuccessToast('Successfuly created!');
+
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+      showErrorToast(`Error fetching data ${error}`);
+    }
+  };
+
   return (
     <section className='bg-gray-50 dark:bg-gray-900'>
       <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0'>
@@ -15,7 +49,31 @@ const RegisterPage = () => {
             <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white'>
               Create an account
             </h1>
-            <form className='space-y-4 md:space-y-6' action='#'>
+            <form
+              className='space-y-4 md:space-y-6'
+              action='#'
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div>
+                <label
+                  htmlFor='username'
+                  className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+                >
+                  Username
+                </label>
+                <input
+                  type='username'
+                  id='username'
+                  className='bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  placeholder='Username'
+                  {...register('username', {
+                    required: 'Username is required',
+                  })}
+                  required
+                />
+                {errors.username && <p>{errors.username.message}</p>}
+              </div>
+
               <div>
                 <label
                   htmlFor='email'
@@ -25,13 +83,15 @@ const RegisterPage = () => {
                 </label>
                 <input
                   type='email'
-                  name='email'
                   id='email'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  placeholder='name@company.com'
+                  className='bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  placeholder='Email'
+                  {...register('email', { required: 'Email is required' })}
                   required
                 />
+                {errors.email && <p>{errors.email.message}</p>}
               </div>
+
               <div>
                 <label
                   htmlFor='password'
@@ -41,14 +101,16 @@ const RegisterPage = () => {
                 </label>
                 <input
                   type='password'
-                  name='password'
                   id='password'
                   placeholder='••••••••'
-                  className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  className='bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  {...register('password', {
+                    required: 'Password is required',
+                  })} // Correctly register password
                   required
                 />
               </div>
-              <div>
+              {/* <div>
                 <label
                   htmlFor='confirm-password'
                   className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
@@ -63,7 +125,7 @@ const RegisterPage = () => {
                   className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                   required
                 />
-              </div>
+              </div> */}
               <div className='flex items-start'>
                 <div className='flex items-center h-5'>
                   <input

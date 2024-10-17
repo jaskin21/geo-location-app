@@ -6,6 +6,7 @@ var logger = require('morgan');
 var connectDb = require('./connect-db.js');
 
 require('dotenv').config();
+const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -19,6 +20,14 @@ app.set('view engine', 'jade');
 
 //db connection code
 connectDb(process.env.DB_CONNECTION, process.env.DB_NAME);
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: 'GET,POST,PUT,DELETE',
+    credentials: true,
+  })
+);
 
 app.use(logger('dev'));
 app.use(express.json());
