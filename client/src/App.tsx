@@ -1,6 +1,8 @@
 // App.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './features/layout/Layout';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Suspense, lazy } from 'react';
 import Loading from './pages/Loading';
@@ -34,6 +36,8 @@ const NotFoundPage = lazy(() =>
 export default function App() {
   return (
     <BrowserRouter>
+      <ToastContainer />
+
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path='/signup' element={<RegisterPage />} />
