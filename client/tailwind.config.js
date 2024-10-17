@@ -1,8 +1,13 @@
-/** @type {import('tailwindcss').Config} */
+const flowbite = require('flowbite-react/tailwind');
+
 module.exports = {
-  content: ['./src/**/*.{html,js}'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}', flowbite.content()],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        customGray: '#454553', // Add your custom gray color here
+      },
+    },
   },
-  plugins: [],
+  plugins: [flowbite.plugin()],
 };

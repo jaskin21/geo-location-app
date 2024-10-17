@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './features/layout/Layout';
 
 import { Suspense, lazy } from 'react';
+import Loading from './pages/Loading';
 
 // Funtion test to intentionaly delay lazy load
 const delayImport = <T,>(
@@ -17,7 +18,9 @@ const delayImport = <T,>(
 };
 
 // Lazy-loaded components
-const RegisterPage = lazy(() => delayImport(() => import('./pages/RegisterPage')));
+const RegisterPage = lazy(() =>
+  delayImport(() => import('./pages/RegisterPage'))
+);
 const LoginPage = lazy(() => delayImport(() => import('./pages/LoginPage')));
 const HomePage = lazy(() => delayImport(() => import('./pages/HomePage')));
 const NotFoundPage = lazy(() =>
@@ -31,9 +34,9 @@ const NotFoundPage = lazy(() =>
 export default function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <Routes>
-          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/signup' element={<RegisterPage />} />
           <Route path='/' element={<LoginPage />} />
           <Route path='/geo-app' element={<Layout />}>
             <Route index element={<HomePage />} />
