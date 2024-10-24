@@ -2,8 +2,9 @@ import { MapPinArea } from '@phosphor-icons/react';
 import { Link, useNavigate } from 'react-router-dom';
 import useToast from '../hook/useToast';
 import { useForm } from 'react-hook-form';
-import { login } from '../utils/axiosInstance';
 import Cookies from 'js-cookie';
+import { useLoginMutation } from '../stores/apiSlice';
+import { useState } from 'react';
 
 interface UserData {
   email: string;
@@ -11,17 +12,29 @@ interface UserData {
 }
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const { showSuccessToast, showErrorToast } = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<UserData>();
 
+  // Use the login mutation hook from RTK Query
+  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+  // State to hold error message
+  const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
+    null
+  );
+
+  const navigate = useNavigate();
+  const { showSuccessToast, showErrorToast } = useToast();
+
   const onSubmit = async (dataCreds: UserData) => {
     try {
-      const res = await login(dataCreds.email, dataCreds.password);
+      // Trigger the login mutation and pass the form data
+      const res = await login({
+        email: dataCreds.email,
+        password: dataCreds.password,
+      }).unwrap();
       showSuccessToast('Data fetched successfully!');
 
       Cookies.set('token', res.token, {
@@ -32,7 +45,9 @@ const LoginPage = () => {
 
       navigate('/geo-app');
     } catch (error) {
-      showErrorToast(`Error fetching data ${error}`);
+      const errorMsg = error?.data?.error || 'Login failed. Please try again.';
+      setLoginErrorMessage(errorMsg);
+      showErrorToast(`${errorMsg}`);
     }
   };
 
@@ -71,7 +86,6 @@ const LoginPage = () => {
                   required
                 />
                 {errors.email && <p>{errors.email.message}</p>}
-                
               </div>
               <div>
                 <label
@@ -122,8 +136,10 @@ const LoginPage = () => {
                 type='submit'
                 className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >
-                Login
+                {isLoggingIn ? 'Logging in...' : 'Login'}
               </button>
+              {loginErrorMessage && <p>{loginErrorMessage}</p>}
+
               <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
                 Don’t have an account yet?{' '}
                 <Link

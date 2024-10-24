@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { Suspense, lazy } from 'react';
 import Loading from './pages/Loading';
+import { Provider } from 'react-redux';
+import { store } from './stores/store';
 
 // Funtion test to intentionaly delay lazy load
 const delayImport = <T,>(
@@ -35,19 +37,23 @@ const NotFoundPage = lazy(() =>
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <ToastContainer />
+    <Provider store={store}>
+      {' '}
+      {/* Wrap your app with Redux Provider */}
+      <BrowserRouter>
+        <ToastContainer />
 
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          <Route path='/signup' element={<RegisterPage />} />
-          <Route path='/' element={<LoginPage />} />
-          <Route path='/geo-app' element={<Layout />}>
-            <Route index element={<HomePage />} />
-          </Route>
-          <Route path='*' element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            <Route path='/signup' element={<RegisterPage />} />
+            <Route path='/' element={<LoginPage />} />
+            <Route path='/geo-app' element={<Layout />}>
+              <Route index element={<HomePage />} />
+            </Route>
+            <Route path='*' element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </Provider>
   );
 }
