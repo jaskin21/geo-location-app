@@ -1,21 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-// Define the structure of the login request
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-// Define the structure of the login response (adjust according to your API's response)
-interface LoginResponse {
-  token: string; // Example: The response could be a token or user data
-  user: {
-    id: string;
-    email: string;
-  };
-}
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import {
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+} from '../types/apiSlice';
+const baseUrl = import.meta.env.VITE_BASE_URL; // Access Vite env variable
 
 // Create the API slice
 export const apiSlice = createApi({
@@ -23,9 +13,18 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: baseUrl }), // Base URL of the API
   endpoints: (builder) => ({
     // Define the login mutation
-    login: builder.mutation<LoginResponse, LoginRequest>({
+    loginApiEndpoint: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
         url: '/auth/login', // API endpoint for login
+        method: 'POST', // HTTP method (POST)
+        body: credentials, // The payload (email & password)
+      }),
+    }),
+
+    // Define the register mutation
+    registerApiEndpoint: builder.mutation<RegisterResponse, RegisterRequest>({
+      query: (credentials) => ({
+        url: '/auth/register', // API endpoint for register
         method: 'POST', // HTTP method (POST)
         body: credentials, // The payload (email & password)
       }),
@@ -33,5 +32,5 @@ export const apiSlice = createApi({
   }),
 });
 
-// Export the auto-generated hook for the `login` mutation
-export const { useLoginMutation } = apiSlice;
+// Export the auto-generated hooks for the `loginApiEndpoint` and `registerApiEndpoint` mutations
+export const { useLoginApiEndpointMutation, useRegisterApiEndpointMutation } = apiSlice;

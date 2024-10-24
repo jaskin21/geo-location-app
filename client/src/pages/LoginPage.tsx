@@ -3,35 +3,30 @@ import { Link, useNavigate } from 'react-router-dom';
 import useToast from '../hook/useToast';
 import { useForm } from 'react-hook-form';
 import Cookies from 'js-cookie';
-import { useLoginMutation } from '../stores/apiSlice';
+import { useLoginApiEndpointMutation } from '../stores/apiSlice';
 import { useState } from 'react';
-
-interface UserData {
-  email: string;
-  password: string;
-}
+import { LoginRequest } from '../types/apiSlice';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { showSuccessToast, showErrorToast } = useToast();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserData>();
+  } = useForm<LoginRequest>();
 
   // Use the login mutation hook from RTK Query
-  const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+  const [loginApiEndpoint, { isLoading: isLoggingIn }] =
+    useLoginApiEndpointMutation();
   // State to hold error message
-  const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
-    null
-  );
+  const [loginErrorMessage, setLoginErrorMessage] = useState<string>('');
 
-  const navigate = useNavigate();
-  const { showSuccessToast, showErrorToast } = useToast();
-
-  const onSubmit = async (dataCreds: UserData) => {
+  const onSubmit = async (dataCreds: LoginRequest) => {
     try {
       // Trigger the login mutation and pass the form data
-      const res = await login({
+      const res = await loginApiEndpoint({
         email: dataCreds.email,
         password: dataCreds.password,
       }).unwrap();

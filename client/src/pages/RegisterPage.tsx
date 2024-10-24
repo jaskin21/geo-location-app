@@ -1,38 +1,41 @@
 import { MapPinArea } from '@phosphor-icons/react';
 import useToast from '../hook/useToast';
 import { useForm } from 'react-hook-form';
-import { registerUser } from '../utils/axiosInstance';
 import { Link, useNavigate } from 'react-router-dom';
-
-interface UserData {
-  username: string;
-  email: string;
-  password: string;
-}
+import { RegisterRequest } from '../types/apiSlice';
+import { useState } from 'react';
+import { useRegisterApiEndpointMutation } from '../stores/apiSlice';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { showSuccessToast, showErrorToast } = useToast();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<UserData>();
+  } = useForm<RegisterRequest>();
 
-  const onSubmit = async (dataCreds: UserData) => {
+  // Use the login mutation hook from RTK Query
+  const [registerApiEndpoint, { isLoading: isRegistering }] = useRegisterApiEndpointMutation();
+  // State to hold error message
+  const [registerErrorMessage, setRegisterErrorMessage] = useState<string>('');
+
+  const onSubmit = async (dataCreds: RegisterRequest) => {
     try {
       console.log(dataCreds);
-      await registerUser(
-        dataCreds.username,
-        dataCreds.email,
-        dataCreds.password
-      );
-      showSuccessToast('Successfuly created!');
+      const response = await registerApiEndpoint({
+        username: dataCreds.username,
+        email: dataCreds.email,
+        password: dataCreds.password,
+      }).unwrap();
 
+      showSuccessToast(response.message);
       navigate('/');
     } catch (error) {
-      console.log(error);
-      showErrorToast(`Error fetching data ${error}`);
+      const errorMsg = error?.data?.error || 'Login failed. Please try again.';
+      setRegisterErrorMessage(errorMsg);
+      showErrorToast(`${errorMsg}`);
     }
   };
 
@@ -155,8 +158,10 @@ const RegisterPage = () => {
                 type='submit'
                 className='w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
               >
-                Create an account
+                {isRegistering ? 'Creating account...' : 'Create an account'}
               </button>
+              {registerErrorMessage && <p>{registerErrorMessage}</p>}
+
               <p className='text-sm font-light text-gray-500 dark:text-gray-400'>
                 Already have an account?{' '}
                 <Link
