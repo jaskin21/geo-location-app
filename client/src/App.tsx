@@ -27,10 +27,15 @@ const RegisterPage = lazy(() =>
 );
 const LoginPage = lazy(() => delayImport(() => import('./pages/LoginPage')));
 const HomePage = lazy(() => delayImport(() => import('./pages/HomePage')));
+const ContactPage = lazy(() =>
+  delayImport(() => import('./pages/ContactPage'))
+);
 const NotFoundPage = lazy(() =>
   delayImport(() => import('./pages/NotFoundPage'))
 );
 
+// const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+// const LoginPage = lazy(() => import('./pages/LoginPage'));
 // const HomePage = lazy(() => import('./pages/HomePage'));
 // const ContactPage = lazy(() => import('./pages/ContactPage'));
 // const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -46,9 +51,10 @@ export default function App() {
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path='/signup' element={<RegisterPage />} />
-            <Route path='/' element={<LoginPage />} />
-            <Route path='/geo-app' element={<Layout />}>
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/' element={<Layout />}>
               <Route index element={<HomePage />} />
+              <Route path='/contact' element={<ContactPage />} />
             </Route>
             <Route path='*' element={<NotFoundPage />} />
           </Routes>

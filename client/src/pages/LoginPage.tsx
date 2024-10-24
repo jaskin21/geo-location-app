@@ -30,7 +30,7 @@ const LoginPage = () => {
         email: dataCreds.email,
         password: dataCreds.password,
       }).unwrap();
-      showSuccessToast('Data fetched successfully!');
+      showSuccessToast(res.status);
 
       Cookies.set('token', res.token, {
         secure: false, // In production, set to true (for HTTPS)
@@ -38,7 +38,7 @@ const LoginPage = () => {
         expires: 1, // Token expiration in days (or use maxAge in seconds)
       });
 
-      navigate('/geo-app');
+      navigate('/');
     } catch (error) {
       const errorMsg = error?.data?.error || 'Login failed. Please try again.';
       setLoginErrorMessage(errorMsg);

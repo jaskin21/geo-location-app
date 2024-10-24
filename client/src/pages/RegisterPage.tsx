@@ -31,7 +31,7 @@ const RegisterPage = () => {
       }).unwrap();
 
       showSuccessToast(response.message);
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       const errorMsg = error?.data?.error || 'Login failed. Please try again.';
       setRegisterErrorMessage(errorMsg);
