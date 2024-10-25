@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RegisterRequest } from '../types/apiSlice';
 import { useState } from 'react';
 import { useRegisterApiEndpointMutation } from '../stores/apiSlice';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ const RegisterPage = () => {
   } = useForm<RegisterRequest>();
 
   // Use the login mutation hook from RTK Query
-  const [registerApiEndpoint, { isLoading: isRegistering }] = useRegisterApiEndpointMutation();
+  const [registerApiEndpoint, { isLoading: isRegistering }] =
+    useRegisterApiEndpointMutation();
   // State to hold error message
   const [registerErrorMessage, setRegisterErrorMessage] = useState<string>('');
 
@@ -33,7 +35,14 @@ const RegisterPage = () => {
       showSuccessToast(response.message);
       navigate('/login');
     } catch (error) {
-      const errorMsg = error?.data?.error || 'Login failed. Please try again.';
+      let errorMsg = 'register failed. Please try again.';
+
+      if ((error as FetchBaseQueryError)?.data) {
+        const errorData = (error as FetchBaseQueryError).data as {
+          error?: string;
+        };
+        errorMsg = errorData?.error || errorMsg;
+      }
       setRegisterErrorMessage(errorMsg);
       showErrorToast(`${errorMsg}`);
     }
