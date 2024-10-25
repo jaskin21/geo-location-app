@@ -7,6 +7,7 @@ import { useLoginApiEndpointMutation } from '../stores/apiSlice';
 import { useState } from 'react';
 import { LoginRequest } from '../types/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { handleFetchBaseQueryError } from '../utils/errorFactory';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -41,17 +42,13 @@ const LoginPage = () => {
 
       navigate('/');
     } catch (error) {
-      let errorMsg = 'Login failed. Please try again.';
-      // Type check if the error is of type `FetchBaseQueryError` and if `data` is available
-      if ((error as FetchBaseQueryError)?.data) {
-        const errorData = (error as FetchBaseQueryError).data as {
-          error?: string;
-        };
-        errorMsg = errorData?.error || errorMsg;
-      }
+      const errorMessage = handleFetchBaseQueryError(
+        error as FetchBaseQueryError,
+        'Login failed. Please try again.'
+      );
 
-      setLoginErrorMessage(errorMsg);
-      showErrorToast(`${errorMsg}`);
+      setLoginErrorMessage(errorMessage);
+      showErrorToast(`${errorMessage}`);
     }
   };
 

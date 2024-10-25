@@ -6,6 +6,7 @@ import { RegisterRequest } from '../types/apiSlice';
 import { useState } from 'react';
 import { useRegisterApiEndpointMutation } from '../stores/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { handleFetchBaseQueryError } from '../utils/errorFactory';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -35,16 +36,12 @@ const RegisterPage = () => {
       showSuccessToast(response.message);
       navigate('/login');
     } catch (error) {
-      let errorMsg = 'register failed. Please try again.';
-
-      if ((error as FetchBaseQueryError)?.data) {
-        const errorData = (error as FetchBaseQueryError).data as {
-          error?: string;
-        };
-        errorMsg = errorData?.error || errorMsg;
-      }
-      setRegisterErrorMessage(errorMsg);
-      showErrorToast(`${errorMsg}`);
+      const errorMessage = handleFetchBaseQueryError(
+        error as FetchBaseQueryError,
+        'Register failed. Please try again.'
+      );
+      setRegisterErrorMessage(errorMessage);
+      showErrorToast(`${errorMessage}`);
     }
   };
 
