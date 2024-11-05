@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
+  ApiInfoRequest,
+  ApiInfoResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -29,8 +31,20 @@ export const apiSlice = createApi({
         body: credentials, // The payload (email & password)
       }),
     }),
+
+    // Define the api info mutation
+    apiInfoApiEndpoint: builder.mutation<ApiInfoResponse, ApiInfoRequest>({
+      query: (credentials) => ({
+        url: `/api/ipinfo?ip=${credentials.ip}`, // API endpoint for register
+        method: 'GET', // HTTP method (GET)
+      }),
+    }),
   }),
 });
 
 // Export the auto-generated hooks for the `loginApiEndpoint` and `registerApiEndpoint` mutations
-export const { useLoginApiEndpointMutation, useRegisterApiEndpointMutation } = apiSlice;
+export const {
+  useLoginApiEndpointMutation,
+  useRegisterApiEndpointMutation,
+  useApiInfoApiEndpointMutation,
+} = apiSlice;
