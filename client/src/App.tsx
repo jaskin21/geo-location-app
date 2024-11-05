@@ -27,6 +27,8 @@ const RegisterPage = lazy(() =>
 );
 const LoginPage = lazy(() => delayImport(() => import('./pages/LoginPage')));
 const HomePage = lazy(() => delayImport(() => import('./pages/HomePage')));
+const FindPage = lazy(() => delayImport(() => import('./pages/FindPage')));
+const HistoryPage = lazy(() => delayImport(() => import('./pages/HistoryPage')));
 const ContactPage = lazy(() =>
   delayImport(() => import('./pages/ContactPage'))
 );
@@ -54,6 +56,8 @@ export default function App() {
             <Route path='/login' element={<LoginPage />} />
             <Route path='/' element={<Layout />}>
               <Route index element={<HomePage />} />
+              <Route path='/find' element={<FindPage />} />
+              <Route path='/history' element={<HistoryPage />} />
               <Route path='/contact' element={<ContactPage />} />
             </Route>
             <Route path='*' element={<NotFoundPage />} />
