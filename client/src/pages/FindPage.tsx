@@ -4,12 +4,13 @@ import { handleFetchBaseQueryError } from '../utils/errorFactory';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useApiInfoApiEndpointMutation } from '../stores/apiSlice';
 import { ApiInfoResponseData } from '../types/apiSlice';
+import { MapPin } from '@phosphor-icons/react';
 
 const FindPage = () => {
   const [apiInfoApiEndpoint, { isLoading: isLoggingIn }] =
     useApiInfoApiEndpointMutation();
 
-  const [ipData, setIpDate] = useState<ApiInfoResponseData>();
+  const [ipData, setIpDate] = useState<ApiInfoResponseData | undefined>();
   const [inputIp, setInputIp] = useState<string>('');
   const { showSuccessToast, showErrorToast } = useToast();
 
@@ -36,13 +37,14 @@ const FindPage = () => {
   }, []); // eslint-disable-line
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    setIpDate(undefined);
     e.preventDefault();
     fetchIpInfo(inputIp); // Use the entered IP in the query
   };
 
   return (
-    <div>
-      <form className='max-w-md mx-auto mt-10' onSubmit={handleSearch}>
+    <div className='flex flex-col items-center justify-center gap-10 mb-10'>
+      <form className='w-4/12 mx-auto' onSubmit={handleSearch}>
         <div className='relative'>
           <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
             <svg
@@ -83,22 +85,69 @@ const FindPage = () => {
         </div>
       </form>
 
-      {isLoggingIn && <p>Loading...</p>}
-
-      {ipData && !isLoggingIn && (
-        <div>
-          <h2>IP Information</h2>
-          <p>IP: {ipData.ip}</p>
-          <p>City: {ipData.city}</p>
-          <p>Region: {ipData.region}</p>
-          <p>Country: {ipData.country}</p>
-          <p>Country: {ipData.loc}</p>
-          <p>Country: {ipData.postal}</p>
-          <p>Country: {ipData.timezone}</p>
+      <div className='w-4/12 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+        <div className='flex flex-row gap-2 justify-center'>
+          <MapPin size={32} />
+          <a href='#'>
+            <h5 className='mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white'>
+              IP Information
+            </h5>
+          </a>
         </div>
-      )}
+        <p className='mb-3 font-normal text-gray-500 dark:text-gray-400'>
+          Based on the geolocation data, the IP address has the following
+          information
+        </p>
+        {isLoggingIn && <p>Loading...</p>}
 
-      {!ipData && !isLoggingIn && <p>Enter an IP to search for IP data.</p>}
+        {ipData && !isLoggingIn && (
+          <div className='space-y-2'>
+            {/* IP */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>IP:</span>
+              <span>{ipData.ip}</span>
+            </div>
+
+            {/* City */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>City:</span>
+              <span>{ipData.city}</span>
+            </div>
+
+            {/* Region */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>Region:</span>
+              <span>{ipData.region}</span>
+            </div>
+
+            {/* Country */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>Country:</span>
+              <span>{ipData.country}</span>
+            </div>
+
+            {/* Location */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>Location:</span>
+              <span>{ipData.loc}</span>
+            </div>
+
+            {/* Postal Code */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>Postal code:</span>
+              <span>{ipData.postal}</span>
+            </div>
+
+            {/* Timezone */}
+            <div className='flex justify-between text-gray-900 dark:text-white'>
+              <span className='font-semibold'>Timezone:</span>
+              <span>{ipData.timezone}</span>
+            </div>
+          </div>
+        )}
+
+        {!ipData && !isLoggingIn && <p>No Information.</p>}
+      </div>
     </div>
   );
 };
