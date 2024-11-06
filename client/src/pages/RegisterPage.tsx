@@ -26,7 +26,6 @@ const RegisterPage = () => {
 
   const onSubmit = async (dataCreds: RegisterRequest) => {
     try {
-      console.log(dataCreds);
       const response = await registerApiEndpoint({
         username: dataCreds.username,
         email: dataCreds.email,

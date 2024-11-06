@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import useToast from '../hook/useToast';
 import { handleFetchBaseQueryError } from '../utils/errorFactory';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { useApiInfoApiEndpointMutation } from '../stores/apiSlice';
+import {
+  useApiInfoApiEndpointMutation,
+  useGetHistoryListEndpointQuery,
+  usePostHistoryEndpointMutation,
+} from '../stores/apiSlice';
 import { ApiInfoResponseData } from '../types/apiSlice';
 import { MapPin } from '@phosphor-icons/react';
 
@@ -14,13 +18,30 @@ const FindPage = () => {
   const [inputIp, setInputIp] = useState<string>('');
   const { showSuccessToast, showErrorToast } = useToast();
 
-  const fetchIpInfo = async (ip: string = '') => {
+  // Use the login mutation hook from RTK Query
+  const [postHistoryEnpoint] = usePostHistoryEndpointMutation();
+  const { refetch } = useGetHistoryListEndpointQuery({});
+
+  const fetchIpInfo = async (ip: string = '', saveHistory: boolean = false) => {
     try {
       const res = await apiInfoApiEndpoint({ ip }).unwrap();
 
       if (ip) {
         showSuccessToast(res.status);
       }
+
+      if (saveHistory) {
+        await postHistoryEnpoint({
+          ip: res.data.ip,
+          city: res.data.city,
+          region: res.data.region,
+          country: res.data.country,
+          postal: res.data.postal,
+          timezone: res.data.timezone,
+        }).unwrap();
+        refetch();
+      }
+
       setIpDate(res.data);
     } catch (error) {
       const errorMessage = handleFetchBaseQueryError(
@@ -28,6 +49,13 @@ const FindPage = () => {
         'Invalid IP Address!',
         true
       );
+      if (saveHistory) {
+        console.log(saveHistory);
+        await postHistoryEnpoint({
+          ip,
+        }).unwrap();
+        refetch();
+      }
       showErrorToast(`${errorMessage}`);
     }
   };
@@ -39,7 +67,7 @@ const FindPage = () => {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     setIpDate(undefined);
     e.preventDefault();
-    fetchIpInfo(inputIp); // Use the entered IP in the query
+    fetchIpInfo(inputIp, true); // Use the entered IP in the query
   };
 
   return (

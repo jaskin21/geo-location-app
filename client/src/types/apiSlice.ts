@@ -75,3 +75,20 @@ export interface ApiHistoryResponse {
   sortField: string;
   sortOrder: string;
 }
+
+export interface ApiPostHistoryRequest {
+  ip: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  loc?: string;
+  postal?: string;
+  timezone?: string;
+}
+
+export interface ApiPostHistoryResponse {
+  status: string;
+  data: ApiHistoryResponseData[];
+}
+
+

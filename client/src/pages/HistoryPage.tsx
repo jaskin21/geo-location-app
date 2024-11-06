@@ -1,4 +1,5 @@
-import { useGetHistoryListQuery } from '../stores/apiSlice';
+import { formatDate, parseISO } from 'date-fns';
+import { useGetHistoryListEndpointQuery } from '../stores/apiSlice';
 
 const HistoryPage = () => {
   const page = 1;
@@ -7,7 +8,7 @@ const HistoryPage = () => {
   const sortOrder = 'asc';
 
   // Use the query hook
-  const { data, error, isLoading } = useGetHistoryListQuery({
+  const { data, error, isLoading } = useGetHistoryListEndpointQuery({
     page,
     limit,
     sortField,
@@ -30,13 +31,13 @@ const HistoryPage = () => {
                 Region
               </th>
               <th scope='col' className='px-6 py-3'>
-                Country
-              </th>
-              <th scope='col' className='px-6 py-3'>
                 Postal
               </th>
               <th scope='col' className='px-6 py-3'>
-                <span className='sr-only'>Edit</span>
+                Time
+              </th>
+              <th scope='col' className='px-6 py-3'>
+                Action
               </th>
             </tr>
           </thead>
@@ -114,16 +115,20 @@ const HistoryPage = () => {
                   key={item._id}
                   className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
                 >
-                  <th
+                  <td
                     scope='row'
                     className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
                   >
-                    {item.ip}
-                  </th>
-                  <td className='px-6 py-4'> {item.city}</td>
-                  <td className='px-6 py-4'>{item.region}</td>
-                  <td className='px-6 py-4'>{item.country}</td>
-                  <td className='px-6 py-4'>{item.postal}</td>
+                    {item.ip ?? '-'}
+                  </td>
+                  <td className='px-6 py-4'> {item.city ?? '-'}</td>
+                  <td className='px-6 py-4'>{item.region ?? '-'}</td>
+                  <td className='px-6 py-4'>{item.postal ?? '-'}</td>
+                  <td className='px-6 py-4'>
+                    {item.createdAt
+                      ? formatDate(parseISO(item.createdAt), 'yyyy-MM-dd HH:mm:ss')
+                      : '-'}
+                  </td>
                   <td className='px-6 py-4 text-right'>
                     <a
                       href='#'

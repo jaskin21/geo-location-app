@@ -4,6 +4,8 @@ import {
   ApiHistoryResponse,
   ApiInfoRequest,
   ApiInfoResponse,
+  ApiPostHistoryRequest,
+  ApiPostHistoryResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -43,7 +45,10 @@ export const apiSlice = createApi({
     }),
 
     // Define the get api list mutation from mongoose
-    getHistoryList: builder.query<ApiHistoryResponse, ApiHistoryRequest>({
+    getHistoryListEndpoint: builder.query<
+      ApiHistoryResponse,
+      ApiHistoryRequest
+    >({
       query: ({
         page = 1,
         limit = 10,
@@ -60,6 +65,18 @@ export const apiSlice = createApi({
         },
       }),
     }),
+
+    // Define the register mutation
+    postHistoryEndpoint: builder.mutation<
+      ApiPostHistoryResponse,
+      ApiPostHistoryRequest
+    >({
+      query: (credentials) => ({
+        url: '/api/ipinfo', // API endpoint for register
+        method: 'POST', // HTTP method (POST)
+        body: credentials, // The payload (email & password)
+      }),
+    }),
   }),
 });
 
@@ -68,5 +85,6 @@ export const {
   useLoginApiEndpointMutation,
   useRegisterApiEndpointMutation,
   useApiInfoApiEndpointMutation,
-  useGetHistoryListQuery,
+  useGetHistoryListEndpointQuery,
+  usePostHistoryEndpointMutation,
 } = apiSlice;
