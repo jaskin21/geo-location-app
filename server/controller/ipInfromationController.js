@@ -1,6 +1,10 @@
 const { default: axios } = require('axios');
 const { errorResponseFactory } = require('../utils/errorResponseFactory');
-const { responseFactory } = require('../utils/responseFactory');
+const { responseFactory, responseStatus } = require('../utils/responseFactory');
+const {
+  ipInformationValidation,
+} = require('../validation/ipInformationValidation');
+const { IpAddressInformation } = require('../model/ipInformationModel');
 
 const fetchIpAddress = async (req, res) => {
   const fetchUserLocalIpAddress = async () => {
@@ -27,4 +31,43 @@ const fetchIpAddress = async (req, res) => {
   }
 };
 
-module.exports = { fetchIpAddress };
+const createIpAddress = async (req, res) => {
+  try {
+    const reqBody = req.body;
+    const data = {
+      ip: reqBody.ip,
+      city: reqBody.city,
+      region: reqBody.region,
+      country: reqBody.country,
+      postal: reqBody.postal,
+      timezone: reqBody.timezone,
+    };
+
+    const { error } = ipInformationValidation(data);
+
+    if (error) {
+      return errorResponseFactory(
+        res,
+        responseStatus.BAD_REQUEST,
+        error.details[0].message,
+        {
+          details: error.details,
+        }
+      );
+    }
+
+    const saveIpAddress = new IpAddressInformation(data);
+    const ipAddressSaveResponse = await saveIpAddress.save();
+
+    // Send a success response with the saved IP address information
+    return responseFactory(res, 200, { data: ipAddressSaveResponse });
+  } catch (err) {
+    return errorResponseFactory(
+      res,
+      400,
+      err?.message ?? 'Something went wrong, please try again'
+    );
+  }
+};
+
+module.exports = { fetchIpAddress, createIpAddress };
