@@ -70,4 +70,47 @@ const createIpAddress = async (req, res) => {
   }
 };
 
-module.exports = { fetchIpAddress, createIpAddress };
+const allSearchedIpAddressHistory = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Get sort parameters from query, default to sorting by createdAt in descending order
+    const sortField = req.query.sortField || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    const skip = (page - 1) * limit;
+
+    // Fetch the paginated search history from the collection with sorting
+    const searchHistory = await IpAddressInformation.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortField]: sortOrder });
+
+    // Get the total count of documents for pagination info
+    const totalDocuments = await IpAddressInformation.countDocuments();
+    const totalPages = Math.ceil(totalDocuments / limit);
+
+    // Send a success response with the paginated and sorted data
+    return responseFactory(res, 200, {
+      data: searchHistory,
+      currentPage: page,
+      totalPages,
+      totalItems: totalDocuments,
+      sortField,
+      sortOrder: sortOrder === 1 ? 'asc' : 'desc',
+    });
+  } catch (err) {
+    return errorResponseFactory(
+      res,
+      400,
+      err?.message ?? 'Something went wrong, please try again'
+    );
+  }
+};
+
+module.exports = {
+  fetchIpAddress,
+  createIpAddress,
+  allSearchedIpAddressHistory,
+};
