@@ -109,8 +109,31 @@ const allSearchedIpAddressHistory = async (req, res) => {
   }
 };
 
+const deleteIpAddressHistory = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: 'No IDs provided for deletion' });
+    }
+
+    const result = await IpAddressInformation.deleteMany({ _id: { $in: ids } });
+
+    return res.status(200).json({
+      message: `${result.deletedCount} record(s) deleted successfully.`,
+    });
+  } catch (err) {
+    return errorResponseFactory(
+      res,
+      400,
+      err?.message ?? 'Something went wrong, please try again'
+    );
+  }
+};
+
 module.exports = {
   fetchIpAddress,
   createIpAddress,
   allSearchedIpAddressHistory,
+  deleteIpAddressHistory,
 };
