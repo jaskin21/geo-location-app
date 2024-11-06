@@ -41,7 +41,69 @@ const HistoryPage = () => {
             </tr>
           </thead>
 
-          {isLoading && <p>Loading...</p>}
+          {isLoading && (
+            <tbody>
+              <tr className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>
+                <td
+                  scope='row'
+                  className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                >
+                  <div role='status' className='max-w-sm animate-pulse p-0'>
+                    <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
+
+                    <span className='sr-only'>Loading...</span>
+                  </div>
+                </td>
+                <td
+                  scope='row'
+                  className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                >
+                  <div role='status' className='max-w-sm animate-pulse p-0'>
+                    <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
+
+                    <span className='sr-only'>Loading...</span>
+                  </div>
+                </td>
+                <td
+                  scope='row'
+                  className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                >
+                  <div role='status' className='max-w-sm animate-pulse p-0'>
+                    <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
+
+                    <span className='sr-only'>Loading...</span>
+                  </div>
+                </td>
+                <td
+                  scope='row'
+                  className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                >
+                  <div role='status' className='max-w-sm animate-pulse p-0'>
+                    <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
+
+                    <span className='sr-only'>Loading...</span>
+                  </div>
+                </td>
+
+                <td
+                  scope='row'
+                  className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
+                >
+                  <div role='status' className='max-w-sm animate-pulse p-0'>
+                    <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
+
+                    <span className='sr-only'>Loading...</span>
+                  </div>
+                </td>
+
+                <td className='px-6 py-4 text-right'>
+                  <span className='font-medium text-gray-400 cursor-not-allowed'>
+                    Delete
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          )}
 
           {error && <p>Error</p>}
 
