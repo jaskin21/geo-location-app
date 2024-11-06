@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
+  ApiHistoryRequest,
+  ApiHistoryResponse,
   ApiInfoRequest,
   ApiInfoResponse,
   LoginRequest,
@@ -32,11 +34,30 @@ export const apiSlice = createApi({
       }),
     }),
 
-    // Define the api info mutation
+    // Define the get api info mutation from third party api
     apiInfoApiEndpoint: builder.mutation<ApiInfoResponse, ApiInfoRequest>({
       query: (credentials) => ({
         url: `/api/ipinfo?ip=${credentials.ip}`, // API endpoint for register
         method: 'GET', // HTTP method (GET)
+      }),
+    }),
+
+    // Define the get api list mutation from mongoose
+    getHistoryList: builder.query<ApiHistoryResponse, ApiHistoryRequest>({
+      query: ({
+        page = 1,
+        limit = 10,
+        sortField = 'createdAt',
+        sortOrder = 'desc',
+      }) => ({
+        url: `/api/ipinfo/search-history`,
+        method: 'GET',
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
       }),
     }),
   }),
@@ -47,4 +68,5 @@ export const {
   useLoginApiEndpointMutation,
   useRegisterApiEndpointMutation,
   useApiInfoApiEndpointMutation,
+  useGetHistoryListQuery,
 } = apiSlice;

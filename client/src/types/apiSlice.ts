@@ -26,14 +26,14 @@ export interface ApiInfoRequest {
 }
 
 export interface ApiInfoResponseData {
-    ip: string,
-    city?: string,
-    region?: string,
-    country: string,
-    loc: string,
-    postal: string,
-    timezone: string
-  }
+  ip: string;
+  city?: string;
+  region?: string;
+  country: string;
+  loc: string;
+  postal: string;
+  timezone: string;
+}
 
 export interface ApiInfoResponse {
   status: string;
@@ -51,3 +51,27 @@ export interface ApiInfoResponse {
 //     "timezone": "Asia/Manila",
 //     "readme": "https://ipinfo.io/missingauth"
 // }
+
+export interface ApiHistoryRequest {
+  page?: number; // Optional, page number for pagination
+  limit?: number; // Optional, number of items per page
+  sortField?: string; // Optional, field to sort by (e.g., 'createdAt', 'city')
+  sortOrder?: 'asc' | 'desc'; // Optional, sort order (ascending or descending)
+}
+
+export interface ApiHistoryResponseData extends ApiInfoResponseData {
+  _id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
+}
+
+export interface ApiHistoryResponse {
+  status: string;
+  data: ApiHistoryResponseData[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  sortField: string;
+  sortOrder: string;
+}
