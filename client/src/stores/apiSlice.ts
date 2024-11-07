@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
+  ApiDeleteHistoryRequest,
+  ApiDeleteHistoryResponse,
   ApiHistoryRequest,
   ApiHistoryResponse,
   ApiInfoRequest,
@@ -17,6 +19,8 @@ const baseUrl = import.meta.env.VITE_BASE_URL; // Access Vite env variable
 export const apiSlice = createApi({
   reducerPath: 'api', // Unique key to define the state slice
   baseQuery: fetchBaseQuery({ baseUrl: baseUrl }), // Base URL of the API
+  tagTypes: ['History', 'Security'],
+
   endpoints: (builder) => ({
     // Define the login mutation
     loginApiEndpoint: builder.mutation<LoginResponse, LoginRequest>({
@@ -25,6 +29,7 @@ export const apiSlice = createApi({
         method: 'POST', // HTTP method (POST)
         body: credentials, // The payload (email & password)
       }),
+      invalidatesTags: ['Security'],
     }),
 
     // Define the register mutation
@@ -34,6 +39,7 @@ export const apiSlice = createApi({
         method: 'POST', // HTTP method (POST)
         body: credentials, // The payload (email & password)
       }),
+      invalidatesTags: ['Security'],
     }),
 
     // Define the get api info mutation from third party api
@@ -42,6 +48,7 @@ export const apiSlice = createApi({
         url: `/api/ipinfo?ip=${credentials.ip}`, // API endpoint for register
         method: 'GET', // HTTP method (GET)
       }),
+      invalidatesTags: ['History'],
     }),
 
     // Define the get api list mutation from mongoose
@@ -64,9 +71,10 @@ export const apiSlice = createApi({
           sortOrder,
         },
       }),
+      providesTags: ['History'],
     }),
 
-    // Define the register mutation
+    // Define the create mutation
     postHistoryEndpoint: builder.mutation<
       ApiPostHistoryResponse,
       ApiPostHistoryRequest
@@ -76,6 +84,20 @@ export const apiSlice = createApi({
         method: 'POST', // HTTP method (POST)
         body: credentials, // The payload (email & password)
       }),
+      invalidatesTags: ['History'],
+    }),
+
+    // Define the delete ip address mutation
+    deleteHistoryEndpoint: builder.mutation<
+      ApiDeleteHistoryResponse,
+      ApiDeleteHistoryRequest
+    >({
+      query: (arg) => ({
+        url: '/api/ipinfo',
+        method: 'DELETE',
+        body: arg, // Use `arg` here instead of `credentials`
+      }),
+      invalidatesTags: ['History'], // Use invalidatesTags to automatically refetch
     }),
   }),
 });
@@ -87,4 +109,5 @@ export const {
   useApiInfoApiEndpointMutation,
   useGetHistoryListEndpointQuery,
   usePostHistoryEndpointMutation,
+  useDeleteHistoryEndpointMutation,
 } = apiSlice;

@@ -60,9 +60,9 @@ export interface ApiHistoryRequest {
 }
 
 export interface ApiHistoryResponseData extends ApiInfoResponseData {
-  _id?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
   __v?: number;
 }
 
@@ -91,4 +91,10 @@ export interface ApiPostHistoryResponse {
   data: ApiHistoryResponseData[];
 }
 
+export interface ApiDeleteHistoryRequest {
+  ids: string[]; // Add ids property to match expected request shape
+}
 
+export interface ApiDeleteHistoryResponse {
+  message: string;
+}
