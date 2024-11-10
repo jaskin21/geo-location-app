@@ -1,8 +1,19 @@
 import { MapPinArea } from '@phosphor-icons/react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
-export default function Layout() {
+interface LayoutType {
+  logout: () => void;
+}
+
+export default function Layout({ logout }: LayoutType) {
   const location = useLocation();
+
+  const handleClickLogout = () => {
+    console.log('exit');
+    Cookies.remove('token', { path: '/' });
+    logout();
+  };
 
   const isActive = (path: string) =>
     location.pathname === path
@@ -57,12 +68,12 @@ export default function Layout() {
               >
                 hello user!
               </Link>
-              <Link
-                to='/login'
+              <button
+                onClick={handleClickLogout}
                 className='text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800'
               >
                 Logout
-              </Link>
+              </button>
             </div>
           </div>
         </nav>

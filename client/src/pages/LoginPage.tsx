@@ -9,7 +9,11 @@ import { LoginRequest } from '../types/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { handleFetchBaseQueryError } from '../utils/errorFactory';
 
-const LoginPage = () => {
+interface LonginPageType {
+  login: () => void;
+}
+
+const LoginPage = ({ login }: LonginPageType) => {
   const navigate = useNavigate();
   const { showSuccessToast, showErrorToast } = useToast();
 
@@ -39,7 +43,7 @@ const LoginPage = () => {
         sameSite: 'Strict', // Prevents CSRF attacks
         expires: 1, // Token expiration in days (or use maxAge in seconds)
       });
-
+      login();
       navigate('/');
     } catch (error) {
       const errorMessage = handleFetchBaseQueryError(
