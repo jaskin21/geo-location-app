@@ -85,7 +85,7 @@ const allSearchedIpAddressHistory = async (req, res) => {
     const searchHistory = await IpAddressInformation.find()
       .skip(skip)
       .limit(limit)
-      .sort({ [sortField]: sortOrder });
+      .sort({ createdAt: -1 });
 
     // Get the total count of documents for pagination info
     const totalDocuments = await IpAddressInformation.countDocuments();

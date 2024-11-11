@@ -8,12 +8,13 @@ import {
   usePostHistoryEndpointMutation,
 } from '../stores/apiSlice';
 import { ApiInfoResponseData } from '../types/apiSlice';
-import { MapPin } from '@phosphor-icons/react';
+import { Bookmarks, MapPin } from '@phosphor-icons/react';
 
 const FindPage = () => {
   const [apiInfoApiEndpoint, { isLoading: isLoadingInfo }] =
     useApiInfoApiEndpointMutation();
 
+  const [isBookMarked, setIsBookMarked] = useState<boolean>(false);
   const [ipData, setIpDate] = useState<ApiInfoResponseData | undefined>();
   const [inputIp, setInputIp] = useState<string>('');
   const { showSuccessToast, showErrorToast } = useToast();
@@ -21,6 +22,10 @@ const FindPage = () => {
   // Use the login mutation hook from RTK Query
   const [postHistoryEnpoint] = usePostHistoryEndpointMutation();
   const { refetch } = useGetHistoryListEndpointQuery({});
+
+  const handleBookMarkedStatus = () => {
+    setIsBookMarked((prev) => !prev);
+  };
 
   const fetchIpInfo = async (ip: string = '', saveHistory: boolean = false) => {
     try {
@@ -135,7 +140,18 @@ const FindPage = () => {
         </div>
       </form>
 
-      <div className='w-4/12 p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+      <div className='w-4/12 p-6 relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+        <button
+          onClick={handleBookMarkedStatus}
+          className='absolute -top-3 right-3 p-1 rounded-full transition-transform transform hover:scale-110'
+        >
+          {isBookMarked ? (
+            <Bookmarks size={44} color='#31C48D' weight='fill' />
+          ) : (
+            <Bookmarks size={44} />
+          )}
+        </button>
+
         <div className='flex flex-row gap-2 justify-center'>
           <MapPin size={32} />
           <a href='#'>

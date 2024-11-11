@@ -6,6 +6,8 @@ import {
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { handleFetchBaseQueryError } from '../utils/errorFactory';
 import useToast from '../hook/useToast';
+import useDeleteConfirmation from '../hook/useConfirmationDelete';
+import DeleteConfirmationModal from '../components/hook/DeleteConfirmationModal';
 
 const HistoryPage = () => {
   const page = 1;
@@ -23,14 +25,25 @@ const HistoryPage = () => {
     sortOrder,
   });
 
+  const {
+    isModalOpen,
+    openModal,
+    closeModal,
+    confirmDelete,
+    setConfirmCallback,
+  } = useDeleteConfirmation();
+
   const [deleteHistory, { isLoading: isLoadingDelete }] =
     useDeleteHistoryEndpointMutation();
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await deleteHistory({ ids: [id] }).unwrap();
-      refetch();
-      showSuccessToast(response.message);
+      setConfirmCallback(async () => {
+        const response = await deleteHistory({ ids: [id] }).unwrap();
+        showSuccessToast(response.message);
+        refetch();
+      });
+      openModal();
     } catch (error) {
       const errorMessage = handleFetchBaseQueryError(
         error as FetchBaseQueryError,
@@ -203,6 +216,13 @@ const HistoryPage = () => {
           )}
         </table>
       </div>
+      {/* Delete Modal */}
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onConfirm={() => confirmDelete()}
+        message='Are you sure you want to delete this item?'
+      />
     </div>
   );
 };
