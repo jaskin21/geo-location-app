@@ -42,6 +42,22 @@ const allSearchBookmarkNotes = async (req, res) => {
   }
 };
 
+const SearchBookmarkNotes = async (req, res) => {
+  try {
+    const ipAddress = req.params.id; // Assume 'id' is the IP address to search
+    console.log(ipAddress);
+    const bookmarkNote = await BookMarkNote.findOne({ ip: ipAddress });
+
+    return responseFactory(res, 200, { data: bookmarkNote });
+  } catch (err) {
+    return errorResponseFactory(
+      res,
+      400,
+      err?.message ?? 'Something went wrong, please try again'
+    );
+  }
+};
+
 const createBookmarkNote = async (req, res) => {
   try {
     const reqBody = req.body;
@@ -100,7 +116,8 @@ const deleteBookmarkNote = async (req, res) => {
 };
 
 module.exports = {
+  allSearchBookmarkNotes,
+  SearchBookmarkNotes,
   createBookmarkNote,
   deleteBookmarkNote,
-  allSearchBookmarkNotes,
 };
