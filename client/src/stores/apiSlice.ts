@@ -8,6 +8,7 @@ import {
   ApiInfoResponse,
   ApiPostHistoryRequest,
   ApiPostHistoryResponse,
+  BookmarkNoteResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
@@ -19,7 +20,7 @@ const baseUrl = import.meta.env.VITE_BASE_URL; // Access Vite env variable
 export const apiSlice = createApi({
   reducerPath: 'api', // Unique key to define the state slice
   baseQuery: fetchBaseQuery({ baseUrl: baseUrl }), // Base URL of the API
-  tagTypes: ['History', 'Security'],
+  tagTypes: ['History', 'Security', 'Notes'],
 
   endpoints: (builder) => ({
     // Define the login mutation
@@ -99,6 +100,29 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['History'], // Use invalidatesTags to automatically refetch
     }),
+
+    // Define the get api list mutation from mongoose
+    getBookmarkNoteEndpoint: builder.query<
+      BookmarkNoteResponse,
+      ApiHistoryRequest
+    >({
+      query: ({
+        page = 1,
+        limit = 10,
+        sortField = 'createdAt',
+        sortOrder = 'desc',
+      }) => ({
+        url: `/bookmark`,
+        method: 'GET',
+        params: {
+          page,
+          limit,
+          sortField,
+          sortOrder,
+        },
+      }),
+      providesTags: ['Notes'],
+    }),
   }),
 });
 
@@ -110,4 +134,5 @@ export const {
   useGetHistoryListEndpointQuery,
   usePostHistoryEndpointMutation,
   useDeleteHistoryEndpointMutation,
+  useGetBookmarkNoteEndpointQuery,
 } = apiSlice;

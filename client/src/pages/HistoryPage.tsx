@@ -216,6 +216,7 @@ const HistoryPage = () => {
           )}
         </table>
       </div>
+      
       {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={isModalOpen}

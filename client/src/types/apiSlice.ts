@@ -98,3 +98,22 @@ export interface ApiDeleteHistoryRequest {
 export interface ApiDeleteHistoryResponse {
   message: string;
 }
+
+export interface BookmarkNoteResponseData {
+  _id: string;
+  ip: string;
+  note: string;
+  createdAt: string;
+  updatedAt: string;
+  __v?: number;
+}
+
+export interface BookmarkNoteResponse {
+  status: string;
+  data: BookmarkNoteResponseData[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  sortField: string;
+  sortOrder: string;
+}

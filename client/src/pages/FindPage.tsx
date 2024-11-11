@@ -9,15 +9,24 @@ import {
 } from '../stores/apiSlice';
 import { ApiInfoResponseData } from '../types/apiSlice';
 import { BookmarkSimple, MapPin } from '@phosphor-icons/react';
+import DeleteConfirmationModal from '../components/hook/DeleteConfirmationModal';
+import useDeleteConfirmation from '../hook/useConfirmationDelete';
 
 const FindPage = () => {
   const [apiInfoApiEndpoint, { isLoading: isLoadingInfo }] =
     useApiInfoApiEndpointMutation();
+  const {
+    isModalOpen: isDeleteModalOpen,
+    openModal: openDeleteModal,
+    closeModal: closeDeleteModal,
+    confirmDelete,
+    setConfirmCallback: setDeleteConfirmCallback,
+  } = useDeleteConfirmation();
 
   const [isBookMarked, setIsBookMarked] = useState<boolean>(false);
   const [ipData, setIpDate] = useState<ApiInfoResponseData | undefined>();
   const [inputIp, setInputIp] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => setIsModalOpen(false);
 
@@ -27,13 +36,36 @@ const FindPage = () => {
   const { refetch } = useGetHistoryListEndpointQuery({});
 
   const handleBookMarkedStatus = () => {
+    if (isBookMarked) {
+      return handleDeleteBookmarkNoted();
+    }
     setIsModalOpen(true);
     // setIsBookMarked((prev) => !prev);
   };
 
-  const handleCreateBookMarkNote = () => {
-    closeModal()
-  }
+  const handleCreateBookmarkNote = () => {
+    setIsBookMarked(true);
+    closeModal();
+  };
+
+  const handleDeleteBookmarkNoted = () => {
+    try {
+      setDeleteConfirmCallback(async () => {
+        setIsBookMarked(false);
+        // const response = await deleteHistory({ ids: [id] }).unwrap();
+        // showSuccessToast(response.message);
+      });
+      openDeleteModal();
+    } catch (error) {
+      const errorMessage = handleFetchBaseQueryError(
+        error as FetchBaseQueryError,
+        'Invalid IP Address!',
+        true
+      );
+
+      showErrorToast(`${errorMessage}`);
+    }
+  };
 
   const fetchIpInfo = async (ip: string = '', saveHistory: boolean = false) => {
     try {
@@ -287,7 +319,7 @@ const FindPage = () => {
                 </button>
               </div>
               {/* Modal body */}
-              <form className='p-4 md:p-5' onSubmit={handleCreateBookMarkNote}>
+              <form className='p-4 md:p-5' onSubmit={handleCreateBookmarkNote}>
                 <div className='grid gap-4 mb-4 grid-cols-2'>
                   <div className='col-span-2'>
                     <label
@@ -327,6 +359,14 @@ const FindPage = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={() => confirmDelete()}
+        message='Are you sure you want to delete this item?'
+      />
     </div>
   );
 };

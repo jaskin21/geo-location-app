@@ -2,14 +2,32 @@ import { MapPinArea } from '@phosphor-icons/react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
+import { useGetBookmarkNoteEndpointQuery } from '../../stores/apiSlice';
 
 interface LayoutType {
   logout: () => void;
 }
 
 export default function Layout({ logout }: LayoutType) {
+  const page = 1;
+  const limit = 10;
+  const sortField = 'city';
+  const sortOrder = 'asc';
+
   const location = useLocation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const {
+    data: bookmarkData,
+    error: bookmarkError,
+    isLoading: bookmarkIsLoading,
+    // refetch: bookMarkRefetch,
+  } = useGetBookmarkNoteEndpointQuery({
+    page,
+    limit,
+    sortField,
+    sortOrder,
+  });
 
   const toggleDrawer = () => {
     setIsDrawerOpen((prev) => !prev);
@@ -115,7 +133,7 @@ export default function Layout({ logout }: LayoutType) {
           >
             <path d='M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z' />
           </svg>
-          Right drawer
+          Bookmarks
         </h5>
         <button
           type='button'
@@ -139,186 +157,70 @@ export default function Layout({ logout }: LayoutType) {
           </svg>
           <span className='sr-only'>Close menu</span>
         </button>
+
         <div className='flex flex-col gap-2'>
-          <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
-            <a href='#'>
-              <h6
-                className='mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
-                title='Noteworthy technology acquisitions 2021'
-              >
-                Noteworthy technology acquisitions 2021...
-              </h6>
-            </a>
-            <p className='mb-3 text-sm font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
-            </p>
-            <a
-              href='#'
-              className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-            >
-              Show
-              <svg
-                className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
-                aria-hidden='true'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 14 10'
-              >
-                <path
-                  stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M1 5h12m0 0L9 1m4 4L9 9'
-                />
-              </svg>
-            </a>
-          </div>
+          {bookmarkIsLoading && (
+            <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+              <div role='status' className='max-w-sm animate-pulse p-0'>
+                <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
 
-          <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
-            <a href='#'>
-              <h5
-                className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
-                title='Noteworthy technology acquisitions 2021'
-              >
-                Noteworthy technology acquisitions 2021...
-              </h5>
-            </a>
-            <p className='mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
-            </p>
-            <a
-              href='#'
-              className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-            >
-              Show
-              <svg
-                className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
-                aria-hidden='true'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 14 10'
-              >
-                <path
-                  stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M1 5h12m0 0L9 1m4 4L9 9'
-                />
-              </svg>
-            </a>
-          </div>
+                <span className='sr-only'>Loading...</span>
+              </div>
+              <div role='status' className='max-w-sm animate-pulse p-0'>
+                <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
 
-          <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
-            <a href='#'>
-              <h5
-                className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
-                title='Noteworthy technology acquisitions 2021'
-              >
-                Noteworthy technology acquisitions 2021...
-              </h5>
-            </a>
-            <p className='mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
-            </p>
-            <a
-              href='#'
-              className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-            >
-              Show
-              <svg
-                className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
-                aria-hidden='true'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 14 10'
-              >
-                <path
-                  stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M1 5h12m0 0L9 1m4 4L9 9'
-                />
-              </svg>
-            </a>
-          </div>
+                <span className='sr-only'>Loading...</span>
+              </div>
+              <div role='status' className='max-w-sm animate-pulse p-0'>
+                <div className='h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-13'></div>
 
-          <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
-            <a href='#'>
-              <h5
-                className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
-                title='Noteworthy technology acquisitions 2021'
-              >
-                Noteworthy technology acquisitions 2021...
-              </h5>
-            </a>
-            <p className='mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
-            </p>
-            <a
-              href='#'
-              className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-            >
-              Show
-              <svg
-                className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
-                aria-hidden='true'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 14 10'
-              >
-                <path
-                  stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M1 5h12m0 0L9 1m4 4L9 9'
-                />
-              </svg>
-            </a>
-          </div>
+                <span className='sr-only'>Loading...</span>
+              </div>
+            </div>
+          )}
 
-          <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
-            <a href='#'>
-              <h5
-                className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
-                title='Noteworthy technology acquisitions 2021'
-              >
-                Noteworthy technology acquisitions 2021...
-              </h5>
-            </a>
-            <p className='mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
-              Here are the biggest enterprise technology acquisitions of 2021 so
-              far, in reverse chronological order.
-            </p>
-            <a
-              href='#'
-              className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-            >
-              Show
-              <svg
-                className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
-                aria-hidden='true'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 14 10'
-              >
-                <path
-                  stroke='currentColor'
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M1 5h12m0 0L9 1m4 4L9 9'
-                />
-              </svg>
-            </a>
-          </div>
+          {bookmarkError && <p>Error</p>}
+
+          {bookmarkData && (
+            <>
+              {bookmarkData?.data?.map((item) => (
+                <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+                  <a href='#'>
+                    <h6
+                      className='mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'
+                      title='Noteworthy technology acquisitions 2021'
+                    >
+                      {item.ip}
+                    </h6>
+                  </a>
+                  <p className='mb-3 text-sm font-normal text-gray-700 dark:text-gray-400 line-clamp-2'>
+                    {item.note}
+                  </p>
+                  <a
+                    href='#'
+                    className='inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+                  >
+                    Show
+                    <svg
+                      className='rtl:rotate-180 w-3.5 h-3.5 ms-2'
+                      aria-hidden='true'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='none'
+                      viewBox='0 0 14 10'
+                    >
+                      <path
+                        stroke='currentColor'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth='2'
+                        d='M1 5h12m0 0L9 1m4 4L9 9'
+                      />
+                    </svg>
+                  </a>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
