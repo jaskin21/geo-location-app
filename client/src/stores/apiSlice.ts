@@ -8,11 +8,16 @@ import {
   ApiInfoResponse,
   ApiPostHistoryRequest,
   ApiPostHistoryResponse,
+  BookmarkDeleteRequest,
+  BookmarkDeleteResponse,
   BookmarkNoteResponse,
+  BookmarkPostNoteRequest,
+  BookmarkPostNoteResponse,
   LoginRequest,
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  SpicificBookmarkNoteResponse,
 } from '../types/apiSlice';
 const baseUrl = import.meta.env.VITE_BASE_URL; // Access Vite env variable
 
@@ -123,6 +128,43 @@ export const apiSlice = createApi({
       }),
       providesTags: ['Notes'],
     }),
+
+    // Define the get api list mutation from mongoose
+    getSpicificBookmarkNoteEndpoint: builder.mutation<
+      SpicificBookmarkNoteResponse,
+      string
+    >({
+      query: (ip) => ({
+        url: `/bookmark/${ip}`, // Assuming /bookmarks/:ip as the endpoint
+        method: 'GET',
+      }),
+    }),
+
+    // Define the create mutation
+    postBookmarkNoteEndpoint: builder.mutation<
+      BookmarkPostNoteResponse,
+      BookmarkPostNoteRequest
+    >({
+      query: (credentials) => ({
+        url: '/bookmark',
+        method: 'POST',
+        body: credentials,
+      }),
+      invalidatesTags: ['Notes'],
+    }),
+
+    // Define the delete ip address mutation
+    deleteBookmarkEndpoint: builder.mutation<
+      BookmarkDeleteResponse,
+      BookmarkDeleteRequest
+    >({
+      query: (arg) => ({
+        url: '/bookmark',
+        method: 'DELETE',
+        body: arg,
+      }),
+      invalidatesTags: ['Notes'], // Use invalidatesTags to automatically refetch
+    }),
   }),
 });
 
@@ -135,4 +177,7 @@ export const {
   usePostHistoryEndpointMutation,
   useDeleteHistoryEndpointMutation,
   useGetBookmarkNoteEndpointQuery,
+  useGetSpicificBookmarkNoteEndpointMutation,
+  usePostBookmarkNoteEndpointMutation,
+  useDeleteBookmarkEndpointMutation,
 } = apiSlice;

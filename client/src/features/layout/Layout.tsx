@@ -38,7 +38,6 @@ export default function Layout({ logout }: LayoutType) {
   };
 
   const handleClickLogout = () => {
-    console.log('exit');
     Cookies.remove('token', { path: '/' });
     logout();
   };
@@ -75,14 +74,14 @@ export default function Layout({ logout }: LayoutType) {
                 </li>
                 <li>
                   <Link to='/history' className={isActive('/history')}>
-                    Log
+                    History
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to='/contact' className={isActive('/contact')}>
                     Contact
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
 
@@ -183,8 +182,11 @@ export default function Layout({ logout }: LayoutType) {
 
           {bookmarkData && (
             <>
-              {bookmarkData?.data?.map((item) => (
-                <div className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'>
+              {bookmarkData?.data?.map((item, index) => (
+                <div
+                  key={index}
+                  className='max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700'
+                >
                   <a href='#'>
                     <h6
                       className='mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white truncate overflow-hidden'

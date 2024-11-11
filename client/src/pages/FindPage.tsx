@@ -4,15 +4,30 @@ import { handleFetchBaseQueryError } from '../utils/errorFactory';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import {
   useApiInfoApiEndpointMutation,
+  useDeleteBookmarkEndpointMutation,
+  // useDeleteBookmarkEndpointMutation,
+  useGetBookmarkNoteEndpointQuery,
   useGetHistoryListEndpointQuery,
+  useGetSpicificBookmarkNoteEndpointMutation,
+  usePostBookmarkNoteEndpointMutation,
   usePostHistoryEndpointMutation,
 } from '../stores/apiSlice';
-import { ApiInfoResponseData } from '../types/apiSlice';
+import {
+  ApiInfoResponseData,
+  BookmarkPostNoteRequest,
+} from '../types/apiSlice';
 import { BookmarkSimple, MapPin } from '@phosphor-icons/react';
 import DeleteConfirmationModal from '../components/hook/DeleteConfirmationModal';
 import useDeleteConfirmation from '../hook/useConfirmationDelete';
+import { useForm } from 'react-hook-form';
 
 const FindPage = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BookmarkPostNoteRequest>();
+
   const [apiInfoApiEndpoint, { isLoading: isLoadingInfo }] =
     useApiInfoApiEndpointMutation();
   const {
@@ -22,6 +37,10 @@ const FindPage = () => {
     confirmDelete,
     setConfirmCallback: setDeleteConfirmCallback,
   } = useDeleteConfirmation();
+  const { refetch: bookMarkRefetch } = useGetBookmarkNoteEndpointQuery({});
+
+  // const [deleteBookmark, { isLoading: isLoadingDelete }] =
+  //   useDeleteBookmarkEndpointMutation();
 
   const [isBookMarked, setIsBookMarked] = useState<boolean>(false);
   const [ipData, setIpDate] = useState<ApiInfoResponseData | undefined>();
@@ -35,6 +54,19 @@ const FindPage = () => {
   const [postHistoryEnpoint] = usePostHistoryEndpointMutation();
   const { refetch } = useGetHistoryListEndpointQuery({});
 
+  const [
+    postBookmarkNoteEndpoint,
+    // { isLoading: postBookmarkIsLoading }
+  ] = usePostBookmarkNoteEndpointMutation();
+
+  // Bookmark
+  const [getSpicificBookmark, { data: spicificBookmarkData }] =
+    useGetSpicificBookmarkNoteEndpointMutation();
+  const [
+    deleteBookmark,
+    // { isLoading: isLoadingDelete }
+  ] = useDeleteBookmarkEndpointMutation();
+
   const handleBookMarkedStatus = () => {
     if (isBookMarked) {
       return handleDeleteBookmarkNoted();
@@ -43,17 +75,44 @@ const FindPage = () => {
     // setIsBookMarked((prev) => !prev);
   };
 
-  const handleCreateBookmarkNote = () => {
-    setIsBookMarked(true);
-    closeModal();
+  const handleCreateBookmarkNote = async (data: BookmarkPostNoteRequest) => {
+    const { note } = data;
+    try {
+      if (ipData) {
+        await postBookmarkNoteEndpoint({
+          ip: ipData?.ip,
+          note: note,
+        }).unwrap();
+        bookMarkRefetch();
+        closeModal();
+        showSuccessToast('Bookmark Added.');
+        setIsBookMarked(true);
+      }
+    } catch (error) {
+      const errorMessage = handleFetchBaseQueryError(
+        error as FetchBaseQueryError,
+        'Invalid IP Address!',
+        true
+      );
+      showErrorToast(`${errorMessage}`);
+      setIsBookMarked(true);
+      closeModal();
+    }
   };
 
   const handleDeleteBookmarkNoted = () => {
     try {
+      if (!ipData) {
+        return;
+      }
       setDeleteConfirmCallback(async () => {
-        setIsBookMarked(false);
-        // const response = await deleteHistory({ ids: [id] }).unwrap();
-        // showSuccessToast(response.message);
+        if (spicificBookmarkData) {
+          const response = await deleteBookmark({
+            ids: [spicificBookmarkData?.data?._id],
+          }).unwrap();
+          showSuccessToast(response.message);
+          setIsBookMarked(false);
+        }
       });
       openDeleteModal();
     } catch (error) {
@@ -84,10 +143,16 @@ const FindPage = () => {
           postal: res.data.postal,
           timezone: res.data.timezone,
         }).unwrap();
+
         refetch();
       }
 
+      const result = await getSpicificBookmark(res.data.ip).unwrap();
       setIpDate(res.data);
+      if (result.data !== null) {
+        return setIsBookMarked(true);
+      }
+      setIsBookMarked(false);
     } catch (error) {
       const errorMessage = handleFetchBaseQueryError(
         error as FetchBaseQueryError,
@@ -95,7 +160,6 @@ const FindPage = () => {
         true
       );
       if (saveHistory) {
-        console.log(saveHistory);
         await postHistoryEnpoint({
           ip,
         }).unwrap();
@@ -122,7 +186,6 @@ const FindPage = () => {
           <div className='absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none'>
             <svg
               className='w-4 h-4 text-gray-500 dark:text-gray-400'
-              aria-hidden='true'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
               viewBox='0 0 20 20'
@@ -156,7 +219,6 @@ const FindPage = () => {
             {isLoadingInfo ? (
               <div role='status' className='flex justify-center align-middle'>
                 <svg
-                  aria-hidden='true'
                   className='h-5 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600'
                   viewBox='0 0 100 101'
                   fill='none'
@@ -284,7 +346,6 @@ const FindPage = () => {
         <div
           id='crud-modal'
           tabIndex={-1}
-          aria-hidden='true'
           className='fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-black bg-opacity-50'
         >
           <div className='relative p-4 w-full max-w-md'>
@@ -302,7 +363,6 @@ const FindPage = () => {
                 >
                   <svg
                     className='w-3 h-3'
-                    aria-hidden='true'
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'
                     viewBox='0 0 14 14'
@@ -319,7 +379,10 @@ const FindPage = () => {
                 </button>
               </div>
               {/* Modal body */}
-              <form className='p-4 md:p-5' onSubmit={handleCreateBookmarkNote}>
+              <form
+                className='p-4 md:p-5'
+                onSubmit={handleSubmit(handleCreateBookmarkNote)}
+              >
                 <div className='grid gap-4 mb-4 grid-cols-2'>
                   <div className='col-span-2'>
                     <label
@@ -329,11 +392,17 @@ const FindPage = () => {
                       Note Description
                     </label>
                     <textarea
-                      id='description'
                       rows={4}
+                      id='note'
+                      {...register('note', { required: 'Note is required' })}
                       className='block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
                       placeholder='Write note description here'
                     ></textarea>
+                    {errors.note && (
+                      <p className='text-red-500 text-sm mt-1'>
+                        {errors.note.message}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <button

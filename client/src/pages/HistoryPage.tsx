@@ -62,6 +62,9 @@ const HistoryPage = () => {
           <thead className='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
             <tr>
               <th scope='col' className='px-6 py-3'>
+                Time
+              </th>
+              <th scope='col' className='px-6 py-3'>
                 IP Address
               </th>
               <th scope='col' className='px-6 py-3'>
@@ -73,9 +76,7 @@ const HistoryPage = () => {
               <th scope='col' className='px-6 py-3'>
                 Postal
               </th>
-              <th scope='col' className='px-6 py-3'>
-                Time
-              </th>
+
               <th scope='col' className='px-6 py-3'>
                 Action
               </th>
@@ -185,6 +186,14 @@ const HistoryPage = () => {
                   key={item._id}
                   className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
                 >
+                  <td className='px-6 py-4'>
+                    {item.createdAt
+                      ? formatDate(
+                          parseISO(item.createdAt),
+                          'yyyy-MM-dd HH:mm:ss'
+                        )
+                      : '-'}
+                  </td>
                   <td
                     scope='row'
                     className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'
@@ -194,14 +203,7 @@ const HistoryPage = () => {
                   <td className='px-6 py-4'> {item.city ?? '-'}</td>
                   <td className='px-6 py-4'>{item.region ?? '-'}</td>
                   <td className='px-6 py-4'>{item.postal ?? '-'}</td>
-                  <td className='px-6 py-4'>
-                    {item.createdAt
-                      ? formatDate(
-                          parseISO(item.createdAt),
-                          'yyyy-MM-dd HH:mm:ss'
-                        )
-                      : '-'}
-                  </td>
+
                   <td className='px-6 py-4 text-right'>
                     <button
                       onClick={() => handleDelete(item._id)}
@@ -216,7 +218,7 @@ const HistoryPage = () => {
           )}
         </table>
       </div>
-      
+
       {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={isModalOpen}

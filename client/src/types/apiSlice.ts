@@ -108,6 +108,16 @@ export interface BookmarkNoteResponseData {
   __v?: number;
 }
 
+export interface SpicificBookmarkNoteResponse {
+  status: string;
+  data: BookmarkNoteResponseData;
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  sortField: string;
+  sortOrder: string;
+}
+
 export interface BookmarkNoteResponse {
   status: string;
   data: BookmarkNoteResponseData[];
@@ -116,4 +126,23 @@ export interface BookmarkNoteResponse {
   totalItems: number;
   sortField: string;
   sortOrder: string;
+}
+
+export interface BookmarkPostNoteRequest {
+  ip: string;
+  note: string;
+}
+
+
+export interface BookmarkPostNoteResponse {
+  status: string;
+  data: BookmarkNoteResponseData[];
+}
+
+export interface BookmarkDeleteResponse {
+  message: string;
+}
+
+export interface BookmarkDeleteRequest {
+  ids: string[]; // Add ids property to match expected request shape
 }
