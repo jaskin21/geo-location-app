@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import Cookies from 'js-cookie';
 import {
   ApiDeleteHistoryRequest,
   ApiDeleteHistoryResponse,
@@ -53,6 +54,9 @@ export const apiSlice = createApi({
       query: (credentials) => ({
         url: `/api/ipinfo?ip=${credentials.ip}`, // API endpoint for register
         method: 'GET', // HTTP method (GET)
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
       }),
       invalidatesTags: ['History'],
     }),
@@ -70,6 +74,9 @@ export const apiSlice = createApi({
       }) => ({
         url: `/api/ipinfo/search-history`,
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
         params: {
           page,
           limit,
@@ -89,6 +96,9 @@ export const apiSlice = createApi({
         url: '/api/ipinfo', // API endpoint for register
         method: 'POST', // HTTP method (POST)
         body: credentials, // The payload (email & password)
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
       }),
       invalidatesTags: ['History'],
     }),
@@ -102,6 +112,9 @@ export const apiSlice = createApi({
         url: '/api/ipinfo',
         method: 'DELETE',
         body: arg, // Use `arg` here instead of `credentials`
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
       }),
       invalidatesTags: ['History'], // Use invalidatesTags to automatically refetch
     }),
@@ -119,6 +132,9 @@ export const apiSlice = createApi({
       }) => ({
         url: `/bookmark`,
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
         params: {
           page,
           limit,
@@ -137,6 +153,9 @@ export const apiSlice = createApi({
       query: (ip) => ({
         url: `/bookmark/${ip}`, // Assuming /bookmarks/:ip as the endpoint
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
       }),
     }),
 
@@ -148,6 +167,9 @@ export const apiSlice = createApi({
       query: (credentials) => ({
         url: '/bookmark',
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
         body: credentials,
       }),
       invalidatesTags: ['Notes'],
@@ -161,6 +183,9 @@ export const apiSlice = createApi({
       query: (arg) => ({
         url: '/bookmark',
         method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${Cookies.get('token')}`,
+        },
         body: arg,
       }),
       invalidatesTags: ['Notes'], // Use invalidatesTags to automatically refetch

@@ -13,6 +13,7 @@ var usersRouter = require('./routes/users');
 var authRouter = require('./routes/authRoutes');
 var fetchIpAddressRouter = require('./routes/ipInformationRoutes.js');
 var BookMarkNoteRouter = require('./routes/BookmarkNoteRoutes.js');
+const bearerTokenMiddleware = require('./middleware/bearerTokenMiddleware.js');
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(bearerTokenMiddleware);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
